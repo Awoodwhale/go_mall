@@ -38,9 +38,9 @@ func Database(pathRead, pathWrite string) {
 		return
 	}
 	sqlDB, _ := db.DB()
-	sqlDB.SetMaxOpenConns(20) // 连接池
-	sqlDB.SetMaxIdleConns(100)
-	sqlDB.SetConnMaxLifetime(time.Second * 30)
+	sqlDB.SetMaxIdleConns(20)  // 空闲连接池
+	sqlDB.SetMaxOpenConns(100) // 打开
+	sqlDB.SetConnMaxLifetime(time.Minute)
 
 	// 主从配置
 	_db = db

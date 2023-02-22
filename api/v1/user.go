@@ -2,9 +2,12 @@ package v1
 
 import (
 	"github.com/gin-gonic/gin"
+	"go_mall/pkg/e"
 	"go_mall/pkg/utils"
+	"go_mall/serializer"
 	"go_mall/service"
 	"net/http"
+	"time"
 )
 
 func UserRegister(c *gin.Context) {
@@ -18,7 +21,10 @@ func UserRegister(c *gin.Context) {
 		res := userRegisterService.Register(c.Request.Context())
 		c.JSON(http.StatusOK, res)
 	} else {
-		c.JSON(http.StatusBadRequest, err)
+		c.JSON(http.StatusBadRequest, serializer.Response{
+			Code:    e.Error,
+			Message: e.HandleBindingError(err, &userRegisterService),
+		})
 	}
 }
 
@@ -33,7 +39,10 @@ func UserLogin(c *gin.Context) {
 		res := userLoginService.Login(c.Request.Context())
 		c.JSON(http.StatusOK, res)
 	} else {
-		c.JSON(http.StatusBadRequest, err)
+		c.JSON(http.StatusBadRequest, serializer.Response{
+			Code:    e.Error,
+			Message: e.HandleBindingError(err, &userLoginService),
+		})
 	}
 }
 
@@ -49,11 +58,19 @@ func UserUpdate(c *gin.Context) {
 		res := userUpdateService.Update(c.Request.Context(), claims.(*utils.Claims).ID)
 		c.JSON(http.StatusOK, res)
 	} else {
-		c.JSON(http.StatusBadRequest, err)
+		c.JSON(http.StatusBadRequest, serializer.Response{
+			Code:    e.Error,
+			Message: e.HandleBindingError(err, &userUpdateService),
+		})
 	}
 }
 
 func UserUploadAvatar(c *gin.Context) {
+	/**
+	 * UserUploadAvatar
+	 * @Description: 上传用户头像
+	 * @param c
+	 */
 	var userAvatarService service.UserService
 	file, fileHeader, _ := c.Request.FormFile("file")
 	fileSize, fileName := fileHeader.Size, fileHeader.Filename
@@ -62,6 +79,66 @@ func UserUploadAvatar(c *gin.Context) {
 		res := userAvatarService.UploadAvatar(c.Request.Context(), claims.(*utils.Claims).ID, file, fileSize, fileName)
 		c.JSON(http.StatusOK, res)
 	} else {
-		c.JSON(http.StatusBadRequest, err)
+		c.JSON(http.StatusBadRequest, serializer.Response{
+			Code:    e.Error,
+			Message: e.HandleBindingError(err, &userAvatarService),
+		})
+	}
+}
+
+func SendEmail(c *gin.Context) {
+	/**
+	 * SendEmail
+	 * @Description: 发送邮箱
+	 * @param c
+	 */
+	var sendEmailService service.SendEmailService
+	if err := c.ShouldBind(&sendEmailService); err == nil {
+		claims, _ := c.Get("claims")
+		res := sendEmailService.SendEmail(c.Request.Context(), claims.(*utils.Claims).ID)
+		c.JSON(http.StatusOK, res)
+	} else {
+		c.JSON(http.StatusBadRequest, serializer.Response{
+			Code:    e.Error,
+			Message: e.HandleBindingError(err, &sendEmailService),
+		})
+	}
+}
+
+func ValidateEmail(c *gin.Context) {
+	/**
+	 * ValidateEmail
+	 * @Description: 验证邮箱
+	 * @param c
+	 */
+	var (
+		code                 = e.Success
+		token                = c.Param("token") // 获取token
+		validateEmailService service.ValidateEmailService
+	)
+	claims, err := utils.ParseEmailToken(token) // 解析邮箱token
+	if err != nil {
+		// parse错误
+		code = e.ErrorWithParseToken
+	} else if time.Now().Unix() > claims.ExpiresAt {
+		// 过期了
+		code = e.ErrorWithExpiredToken
+	}
+	err = c.ShouldBind(&validateEmailService)
+	if err != nil {
+		code = e.Error
+	}
+	if code == e.Success {
+		res := validateEmailService.ValidateEmail(c.Request.Context(), claims)
+		c.JSON(http.StatusOK, res)
+	} else {
+		msg := e.HandleBindingError(err, &validateEmailService)
+		if msg == "" {
+			msg = e.GetMessageByCode(code)
+		}
+		c.JSON(http.StatusBadRequest, serializer.Response{
+			Code:    code,
+			Message: msg,
+		})
 	}
 }

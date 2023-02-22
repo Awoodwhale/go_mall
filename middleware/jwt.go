@@ -13,9 +13,9 @@ func JWT() gin.HandlerFunc {
 	// token验证中间件
 	return func(c *gin.Context) {
 		code := e.Success
-		claims, err := utils.ParseToken(c.GetHeader("Authorization"))
+		claims, err := utils.ParseJWT(c.GetHeader("Authorization"))
 		if err != nil { // 解析失败
-			code = e.ErrorWithFailedParseToken
+			code = e.ErrorWithParseToken
 		} else if time.Now().Unix() > claims.ExpiresAt {
 			// 过期了
 			code = e.ErrorWithExpiredToken

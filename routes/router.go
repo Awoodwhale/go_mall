@@ -25,15 +25,18 @@ func NewRouter() *gin.Engine {
 			})
 		})
 
-		v1.POST("user/register", api.UserRegister) // 用户注册
-		v1.POST("user/login", api.UserLogin)       // 用户登录
+		v1.POST("user/register", api.UserRegister)              // 用户注册
+		v1.POST("user/login", api.UserLogin)                    // 用户登录
+		v1.GET("user/validate_email/:token", api.ValidateEmail) // 验证邮件有效
 
 		authed := v1.Group("/")      // 需要登录保护
 		authed.Use(middleware.JWT()) // jwt校验中间件
 		{
-			authed.PUT("user", api.UserUpdate)               // 用户更新
+			authed.PUT("user/update", api.UserUpdate)        // 用户更新
 			authed.POST("user/avatar", api.UserUploadAvatar) // 更新用户头像
+			authed.POST("user/send_email", api.SendEmail)    // 发送邮件
 		}
 	}
+
 	return router
 }

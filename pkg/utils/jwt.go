@@ -7,7 +7,7 @@ import (
 
 var jwtSecret = []byte("woodwhale&sheepbotany")
 
-const TokenExpireTime = 24 * time.Hour
+const JWTExpireTime = 24 * time.Hour
 
 type Claims struct {
 	ID        uint   `json:"id"`
@@ -16,9 +16,9 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
-func GenerateToken(id uint, username string, authority int) (string, error) {
+func GenerateJWT(id uint, username string, authority int) (string, error) {
 	/**
-	 * GenerateToken
+	 * GenerateJWT
 	 * @Description: 签发Token
 	 * @param id
 	 * @param username
@@ -27,23 +27,23 @@ func GenerateToken(id uint, username string, authority int) (string, error) {
 	 * @return error
 	 */
 	nowTime := time.Now()
-	expireTime := nowTime.Add(TokenExpireTime) // 24小时的过期时间
+	expireTime := nowTime.Add(JWTExpireTime) // 24小时的过期时间
 	claims := Claims{
 		ID:        id,
 		UserName:  username,
 		Authority: authority,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expireTime.Unix(),
-			Issuer:    "Awoodwhale",
+			Issuer:    "Awoodwhale_mall",
 		},
 	}
 	tokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return tokenClaims.SignedString(jwtSecret)
 }
 
-func ParseToken(token string) (*Claims, error) {
+func ParseJWT(token string) (*Claims, error) {
 	/**
-	 * ParseToken
+	 * ParseJWT
 	 * @Description: 验证token
 	 * @param token
 	 * @return *Claims

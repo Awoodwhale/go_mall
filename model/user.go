@@ -5,6 +5,12 @@ import (
 	"gorm.io/gorm"
 )
 
+const (
+	PasswordCost = 12       // 密码加密难度
+	ActiveUser   = "active" // 激活的用户状态
+	InitMoney    = 114514   // 注册后用户的初始金额
+)
+
 type User struct {
 	gorm.Model
 	UserName string `gorm:"type:varchar(20) unique"`
@@ -39,9 +45,3 @@ func (u *User) CheckPassword(pwd string) bool {
 	}
 	return true
 }
-
-const (
-	PasswordCost = 12       // 密码加密难度
-	ActiveUser   = "active" // 激活的用户状态
-	InitMoney    = 114514   // 注册后用户的初始金额
-)

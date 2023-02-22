@@ -59,7 +59,7 @@ func (service *UserService) Register(ctx context.Context) serializer.Response {
 	}
 	// 用户密码加密
 	if err = user.SetPassword(service.Password); err != nil {
-		code = e.ErrorWithFailedEncryption
+		code = e.ErrorWithEncryption
 		return serializer.Response{
 			Code: code, Message: e.GetMessageByCode(code), Error: err.Error(),
 		}
@@ -113,9 +113,9 @@ func (service *UserService) Login(ctx context.Context) serializer.Response {
 	}
 
 	// token签发
-	token, err := utils.GenerateToken(user.ID, service.UserName, 0)
+	token, err := utils.GenerateJWT(user.ID, service.UserName, 0)
 	if err != nil {
-		code = e.ErrorWithFailedGenToken
+		code = e.ErrorWithGenToken
 		return serializer.Response{Code: code, Message: e.GetMessageByCode(code), Error: err.Error()}
 	}
 
