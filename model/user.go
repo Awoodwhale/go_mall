@@ -32,6 +32,14 @@ func (u *User) SetPassword(password string) error {
 	return nil
 }
 
+func (u *User) CheckPassword(pwd string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(pwd))
+	if err != nil {
+		return false
+	}
+	return true
+}
+
 const (
 	PasswordCost = 12       // 密码加密难度
 	ActiveUser   = "active" // 激活的用户状态

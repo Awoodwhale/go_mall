@@ -18,7 +18,13 @@ func NewRouter() *gin.Engine {
 			ctx.JSON(http.StatusOK, "pong")
 		})
 
-		v1.POST("user/register", api.UserRegister)
+		v1.POST("user/register", api.UserRegister) // 用户注册
+		v1.POST("user/login", api.UserLogin)       // 用户登录
+
+		authed := v1.Group("/") // 需要登录保护
+		{
+			authed.PUT("user", api.UserUpdate)
+		}
 	}
 	return router
 }

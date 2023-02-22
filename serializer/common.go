@@ -5,3 +5,8 @@ type Response struct {
 	Data    any    `json:"data"`
 	Message string `json:"message"`
 }
+
+type TokenData struct {
+	User  any    `json:"user"`
+	Token string `json:"token"`
+}
