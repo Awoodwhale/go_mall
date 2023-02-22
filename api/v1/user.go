@@ -44,9 +44,22 @@ func UserUpdate(c *gin.Context) {
 	 * @param c gin.Context
 	 */
 	var userUpdateService service.UserService
-	claims, _ := utils.ParseToken(c.GetHeader("Authorization"))
 	if err := c.ShouldBind(&userUpdateService); err == nil {
-		res := userUpdateService.Update(c.Request.Context(), claims.ID)
+		claims, _ := c.Get("claims") // 从ctx拿出claims
+		res := userUpdateService.Update(c.Request.Context(), claims.(*utils.Claims).ID)
+		c.JSON(http.StatusOK, res)
+	} else {
+		c.JSON(http.StatusBadRequest, err)
+	}
+}
+
+func UserUploadAvatar(c *gin.Context) {
+	var userAvatarService service.UserService
+	file, fileHeader, _ := c.Request.FormFile("file")
+	fileSize, fileName := fileHeader.Size, fileHeader.Filename
+	if err := c.ShouldBind(&userAvatarService); err == nil {
+		claims, _ := c.Get("claims")
+		res := userAvatarService.UploadAvatar(c.Request.Context(), claims.(*utils.Claims).ID, file, fileSize, fileName)
 		c.JSON(http.StatusOK, res)
 	} else {
 		c.JSON(http.StatusBadRequest, err)

@@ -7,6 +7,7 @@ import (
 	"go_mall/pkg/e"
 	"go_mall/pkg/utils"
 	"go_mall/serializer"
+	"mime/multipart"
 	"strconv"
 )
 
@@ -25,7 +26,10 @@ func (service *UserService) Register(ctx context.Context) serializer.Response {
 	 * @param ctx
 	 * @return serializer.Response
 	 */
-	code := e.Success
+	var (
+		code = e.Success
+		err  error
+	)
 	if !utils.CheckKey(service.Key) { // 密钥检测
 		code = e.ErrorWithKey
 		return serializer.Response{
@@ -54,19 +58,20 @@ func (service *UserService) Register(ctx context.Context) serializer.Response {
 		Money:    utils.Encrypt.AesEncoding(strconv.Itoa(model.InitMoney)), // 初始金额加密
 	}
 	// 用户密码加密
-	if err := user.SetPassword(service.Password); err != nil {
+	if err = user.SetPassword(service.Password); err != nil {
 		code = e.ErrorWithFailedEncryption
 		return serializer.Response{
-			Code: code, Message: e.GetMessageByCode(code),
+			Code: code, Message: e.GetMessageByCode(code), Error: err.Error(),
 		}
 	}
 
 	// 创建用户，写入MySQL
-	if err := userDao.CreateUser(user); err != nil {
-		code = e.Error
+	if err = userDao.CreateUser(user); err != nil {
+		code = e.ErrorWithSQL
 		return serializer.Response{
 			Code:    code,
-			Message: err.Error(),
+			Message: e.GetMessageByCode(code),
+			Error:   err.Error(),
 		}
 	}
 
@@ -86,8 +91,13 @@ func (service *UserService) Login(ctx context.Context) serializer.Response {
 	 * @param ctx
 	 * @return serializer.Response
 	 */
-	code := e.Success
-	userDao := dao.NewUserDao(ctx)
+	var (
+		code    = e.Success
+		user    *model.User
+		err     error
+		userDao = dao.NewUserDao(ctx)
+	)
+
 	user, exist := userDao.ExistOrNotByUserName(service.UserName)
 	if !exist {
 		// 用户不存在
@@ -105,8 +115,8 @@ func (service *UserService) Login(ctx context.Context) serializer.Response {
 	// token签发
 	token, err := utils.GenerateToken(user.ID, service.UserName, 0)
 	if err != nil {
-		code = e.ErrorWithFailedToken
-		return serializer.Response{Code: code, Message: e.GetMessageByCode(code)}
+		code = e.ErrorWithFailedGenToken
+		return serializer.Response{Code: code, Message: e.GetMessageByCode(code), Error: err.Error()}
 	}
 
 	// 没有发生错误那么就是成功登录
@@ -125,33 +135,39 @@ func (service *UserService) Update(ctx context.Context, uid uint) serializer.Res
 	 * @param ctx
 	 * @return serializer.Response
 	 */
-	var user *model.User
-	var err error
+	var (
+		code       = e.Success
+		user       *model.User
+		err        error
+		needUpdate = false
+		userDao    = dao.NewUserDao(ctx)
+	)
 
-	code := e.Success
-	userDao := dao.NewUserDao(ctx)
 	user, err = userDao.GetUserById(uid)
-
 	if err != nil {
-		code = e.Error
-		// MySQL查询错误
+		// MySQL错误
+		code = e.ErrorWithSQL
 		return serializer.Response{
 			Code:    code,
-			Data:    nil,
-			Message: err.Error(),
+			Message: e.GetMessageByCode(code),
+			Error:   err.Error(),
 		}
 	}
 
-	if service.NickName != "" { // 修改nickname
+	if service.NickName != "" && service.NickName != user.NickName { // 修改nickname
 		user.NickName = service.NickName
+		needUpdate = true
 	}
-
-	err = userDao.UpdateUserById(uid, user)
-	if err != nil {
-		code = e.Error
-		return serializer.Response{
-			Code:    code,
-			Message: "修改用户信息失败",
+	// 需要修改再去MySQL修改
+	if needUpdate {
+		err = userDao.UpdateUserById(uid, user)
+		if err != nil {
+			code = e.ErrorWithSQL
+			return serializer.Response{
+				Code:    code,
+				Message: e.GetMessageByCode(code),
+				Error:   err.Error(),
+			}
 		}
 	}
 
@@ -162,4 +178,78 @@ func (service *UserService) Update(ctx context.Context, uid uint) serializer.Res
 		Data:    serializer.BuildUser(user),
 	}
 
+}
+
+func (service *UserService) UploadAvatar(
+	ctx context.Context,
+	uid uint,
+	file multipart.File,
+	size int64,
+	filename string,
+) serializer.Response {
+	/**
+	 * UploadAvatar
+	 * @Description: 上传头像到本地
+	 * @receiver service
+	 * @param ctx
+	 * @param id
+	 * @param file
+	 * @param size
+	 * @return serializer.Response
+	 */
+
+	var (
+		code = e.Success
+		user *model.User
+		err  error
+	)
+
+	if size > 5242880 {
+		// 大于5MB就不允许上传
+		code = e.ErrorWithFileSize
+		return serializer.Response{
+			Code:    code,
+			Message: e.GetMessageByCode(code),
+		}
+	}
+
+	userDao := dao.NewUserDao(ctx)
+	user, err = userDao.GetUserById(uid)
+	if err != nil {
+		code = e.ErrorWithSQL
+		return serializer.Response{
+			Code:    code,
+			Message: e.GetMessageByCode(code),
+			Error:   err.Error(),
+		}
+	}
+
+	// 头像保存到本地
+	filePath, err := UploadAvatarStatic(file, filename, uid)
+	if err != nil {
+		code = e.ErrorWithUploadAvatar
+		return serializer.Response{
+			Code:    code,
+			Message: e.GetMessageByCode(code),
+			Error:   err.Error(),
+		}
+	}
+
+	// 更新头像到MySQL
+	user.Avatar = filePath
+	err = userDao.UpdateUserById(uid, user)
+	if err != nil {
+		code = e.ErrorWithSQL
+		return serializer.Response{
+			Code:    code,
+			Message: e.GetMessageByCode(code),
+			Error:   err.Error(),
+		}
+	}
+
+	return serializer.Response{
+		Code:    code,
+		Message: e.GetMessageByCode(code),
+		Data:    serializer.BuildUser(user),
+	}
 }
