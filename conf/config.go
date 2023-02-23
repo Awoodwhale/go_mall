@@ -32,8 +32,9 @@ var (
 	AvatarPath  string
 )
 
+// Init
+// @Description: 从config.ini读取配置
 func Init() {
-	// 从config.ini读取配置
 	file, err := ini.Load("./conf/config.ini")
 	if err != nil {
 		panic(err)
@@ -52,11 +53,17 @@ func Init() {
 
 }
 
+// loadServer
+// @Description: 获取server的config
+// @param file *ini.File
 func loadServer(file *ini.File) {
 	AppMode = file.Section("service").Key("AppMode").String()
 	HttpPort = ":" + file.Section("service").Key("HttpPort").String() // 加上:前缀
 }
 
+// loadMySQL
+// @Description: 获取MySQL的config
+// @param file *ini.File
 func loadMySQL(file *ini.File) {
 	DBHost = file.Section("mysql").Key("DBHost").String()
 	DBPort = file.Section("mysql").Key("DBPort").String()
@@ -65,6 +72,9 @@ func loadMySQL(file *ini.File) {
 	DBName = file.Section("mysql").Key("DBName").String()
 }
 
+// loadRedis
+// @Description: 获取redis的config
+// @param file *ini.File
 func loadRedis(file *ini.File) {
 	RedisHost = file.Section("redis").Key("RedisHost").String()
 	RedisPort = file.Section("redis").Key("RedisPort").String()
@@ -72,6 +82,9 @@ func loadRedis(file *ini.File) {
 	RedisName = file.Section("redis").Key("RedisName").String()
 }
 
+// loadEmail
+// @Description: 获取email的config
+// @param file *ini.File
 func loadEmail(file *ini.File) {
 	ValidEmail = file.Section("email").Key("ValidEmail").String()
 	SmtpHost = file.Section("email").Key("SmtpHost").String()
@@ -79,6 +92,9 @@ func loadEmail(file *ini.File) {
 	SmtpToken = file.Section("email").Key("SmtpToken").String()
 }
 
+// loadImage
+// @Description: 获取image的config
+// @param file *ini.File
 func loadImage(file *ini.File) {
 	ImgHost = file.Section("image").Key("ImgHost").String()
 	ProductPath = file.Section("image").Key("ProductPath").String()

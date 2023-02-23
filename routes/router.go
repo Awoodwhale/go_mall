@@ -9,6 +9,9 @@ import (
 	"net/http"
 )
 
+// NewRouter
+// @Description: 设置gin router
+// @return *gin.Engine
 func NewRouter() *gin.Engine {
 	router := gin.Default()
 

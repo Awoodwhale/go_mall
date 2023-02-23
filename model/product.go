@@ -2,6 +2,8 @@ package model
 
 import "gorm.io/gorm"
 
+// Product
+// @Description: 商品 model
 type Product struct {
 	gorm.Model
 	Name          string

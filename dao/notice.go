@@ -10,35 +10,29 @@ type NoticeDao struct {
 	*gorm.DB
 }
 
+// GetNoticeById
+// @Description: 通过id获取notice
+// @receiver dao *NoticeDao
+// @param uid uint
+// @return notice *model.Notice
+// @return err error
 func (dao *NoticeDao) GetNoticeById(uid uint) (notice *model.Notice, err error) {
-	/**
-	 * GetNoticeById
-	 * @Description: 通过id获取notice
-	 * @receiver dao
-	 * @param uid
-	 * @return notice
-	 * @return err
-	 */
 	err = dao.DB.Model(&model.Notice{}).Where("id=?", uid).First(&notice).Error
 	return
 }
 
+// NewNoticeDao
+// @Description: 通过ctx生成noticeDao
+// @param ctx context.Context
+// @return *NoticeDao
 func NewNoticeDao(ctx context.Context) *NoticeDao {
-	/**
-	 * NewNoticeDao
-	 * @Description: 通过ctx生成dao
-	 * @param ctx
-	 * @return *NoticeDao
-	 */
 	return &NoticeDao{NewDBClient(ctx)}
 }
 
+// NewNoticeDaoByDB
+// @Description: 通过db获取noticeDao
+// @param db *gorm.DB
+// @return *NoticeDao
 func NewNoticeDaoByDB(db *gorm.DB) *NoticeDao {
-	/**
-	 * NewNoticeDaoByDB
-	 * @Description: 通过db生成dao
-	 * @param db
-	 * @return *NoticeDao
-	 */
 	return &NoticeDao{db}
 }

@@ -7,13 +7,11 @@ import (
 	"errors"
 )
 
+// CheckKey
+// @Description: 检测Key的合法性
+// @param key string
+// @return bool
 func CheckKey(key string) bool {
-	/**
-	 * CheckKey
-	 * @Description: 检测Key
-	 * @param key key
-	 * @return bool
-	 */
 	if key == "" || len(key) != 16 {
 		return false
 	}
@@ -22,16 +20,24 @@ func CheckKey(key string) bool {
 
 var Encrypt = NewEncryption()
 
-// Encryption AES 加密算法
+// Encryption
+// @Description: AES 加密算法
 type Encryption struct {
 	key string
 }
 
+// NewEncryption
+// @Description: 获取enc对象
+// @return *Encryption
 func NewEncryption() *Encryption {
 	return &Encryption{}
 }
 
-// PadPwd 填充密码长度
+// PadPwd
+// @Description: 填充密码长度
+// @param srcByte []byte
+// @param blockSize int
+// @return []byte
 func PadPwd(srcByte []byte, blockSize int) []byte {
 	padNum := blockSize - len(srcByte)%blockSize
 	ret := bytes.Repeat([]byte{byte(padNum)}, padNum)
@@ -39,7 +45,11 @@ func PadPwd(srcByte []byte, blockSize int) []byte {
 	return srcByte
 }
 
-// 去掉填充的部分
+// unPadPwd
+// @Description: 去掉填充的部分
+// @param dst []byte
+// @return []byte
+// @return error
 func unPadPwd(dst []byte) ([]byte, error) {
 	if len(dst) <= 0 {
 		return dst, errors.New("长度有误")
@@ -55,7 +65,11 @@ func unPadPwd(dst []byte) ([]byte, error) {
 	return str, nil
 }
 
-// AesEncoding 加密
+// AesEncoding
+// @Description: aes加密
+// @receiver k *Encryption
+// @param src string
+// @return string
 func (k *Encryption) AesEncoding(src string) string {
 	srcByte := []byte(src)
 	block, err := aes.NewCipher([]byte(k.key))
@@ -71,7 +85,11 @@ func (k *Encryption) AesEncoding(src string) string {
 	return pwd
 }
 
-// AesDecoding 解密
+// AesDecoding
+// @Description: aes解密
+// @receiver k *Encryption
+// @param pwd string
+// @return string
 func (k *Encryption) AesDecoding(pwd string) string {
 	pwdByte := []byte(pwd)
 	pwdByte, err := base64.StdEncoding.DecodeString(pwd)
@@ -91,7 +109,10 @@ func (k *Encryption) AesDecoding(pwd string) string {
 	return string(dst)
 }
 
-// SetKey set方法
+// SetKey
+// @Description: 设置aes密钥
+// @receiver k *Encryption
+// @param key string
 func (k *Encryption) SetKey(key string) {
 	k.key = key
 }

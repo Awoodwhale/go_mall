@@ -5,12 +5,19 @@ import (
 	"go_mall/pkg/utils"
 )
 
+// Money
+// @Description: money vo
 type Money struct {
 	UserID    uint   `json:"user_id"`
 	UserName  string `json:"user_name"`
 	UserMoney string `json:"user_money"`
 }
 
+// BuildMoney
+// @Description: 构造一个money vo
+// @param user *model.User
+// @param key string
+// @return *Money
 func BuildMoney(user *model.User, key string) *Money {
 	utils.Encrypt.SetKey(key)
 	money := utils.Encrypt.AesDecoding(user.Money)

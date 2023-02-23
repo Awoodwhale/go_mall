@@ -10,12 +10,10 @@ import (
 	"time"
 )
 
+// UserRegister
+// @Description: 用户注册api
+// @param c *gin.Context
 func UserRegister(c *gin.Context) {
-	/**
-	 * UserRegister
-	 * @Description: 用户注册
-	 * @param c gin.Context
-	 */
 	var userRegisterService service.UserService
 	if err := c.ShouldBind(&userRegisterService); err == nil {
 		res := userRegisterService.Register(c.Request.Context())
@@ -28,12 +26,10 @@ func UserRegister(c *gin.Context) {
 	}
 }
 
+// UserLogin
+// @Description: 用户登录api
+// @param c *gin.Context
 func UserLogin(c *gin.Context) {
-	/**
-	 * UserLogin
-	 * @Description: 用户登录
-	 * @param c	gin.Context
-	 */
 	var userLoginService service.UserService
 	if err := c.ShouldBind(&userLoginService); err == nil {
 		res := userLoginService.Login(c.Request.Context())
@@ -46,12 +42,10 @@ func UserLogin(c *gin.Context) {
 	}
 }
 
+// UserUpdate
+// @Description: 用户更新api
+// @param c *gin.Context
 func UserUpdate(c *gin.Context) {
-	/**
-	 * UserUpdate
-	 * @Description: 用户更新
-	 * @param c gin.Context
-	 */
 	var userUpdateService service.UserService
 	if err := c.ShouldBind(&userUpdateService); err == nil {
 		claims, _ := c.Get("claims") // 从ctx拿出claims
@@ -65,12 +59,10 @@ func UserUpdate(c *gin.Context) {
 	}
 }
 
+// UserUploadAvatar
+// @Description: 上传用户头像api
+// @param c *gin.Context
 func UserUploadAvatar(c *gin.Context) {
-	/**
-	 * UserUploadAvatar
-	 * @Description: 上传用户头像
-	 * @param c
-	 */
 	var userAvatarService service.UserService
 	file, fileHeader, _ := c.Request.FormFile("file")
 	fileSize, fileName := fileHeader.Size, fileHeader.Filename
@@ -86,12 +78,10 @@ func UserUploadAvatar(c *gin.Context) {
 	}
 }
 
+// UserShowMoney
+// @Description: 显示用户的money的api
+// @param c *gin.Context
 func UserShowMoney(c *gin.Context) {
-	/**
-	 * UserShowMoney
-	 * @Description: 显示用户的money
-	 * @param c
-	 */
 	var showMoneyService service.ShowMoneyService
 	if err := c.ShouldBind(&showMoneyService); err == nil {
 		claims, _ := c.Get("claims")
@@ -105,12 +95,10 @@ func UserShowMoney(c *gin.Context) {
 	}
 }
 
+// SendEmail
+// @Description: 发送邮箱api
+// @param c *gin.Context
 func SendEmail(c *gin.Context) {
-	/**
-	 * SendEmail
-	 * @Description: 发送邮箱
-	 * @param c
-	 */
 	var sendEmailService service.SendEmailService
 	if err := c.ShouldBind(&sendEmailService); err == nil {
 		claims, _ := c.Get("claims")
@@ -124,12 +112,10 @@ func SendEmail(c *gin.Context) {
 	}
 }
 
+// ValidateEmail
+// @Description: 验证邮箱api
+// @param c *gin.Context
 func ValidateEmail(c *gin.Context) {
-	/**
-	 * ValidateEmail
-	 * @Description: 验证邮箱
-	 * @param c
-	 */
 	var (
 		code                 = e.Success
 		token                = c.Param("token") // 获取token

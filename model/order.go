@@ -2,6 +2,8 @@ package model
 
 import "gorm.io/gorm"
 
+// Order
+// @Description: 订单 model
 type Order struct {
 	gorm.Model
 	UserID    uint `gorm:"not null"`

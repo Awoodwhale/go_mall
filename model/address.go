@@ -2,6 +2,8 @@ package model
 
 import "gorm.io/gorm"
 
+// Address
+// @Description: 地址model
 type Address struct {
 	gorm.Model
 	UserID  uint   `gorm:"not null"`

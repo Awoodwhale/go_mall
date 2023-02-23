@@ -8,16 +8,14 @@ import (
 	"strconv"
 )
 
+// UploadAvatarStatic
+// @Description: 上传头像至本地
+// @param file multipart.File
+// @param filename string
+// @param uid uint
+// @return filePath string
+// @return err error
 func UploadAvatarStatic(file multipart.File, filename string, uid uint) (filePath string, err error) {
-	/**
-	 * UploadAvatarStatic
-	 * @Description: 上传头像至本地
-	 * @param file
-	 * @param filename
-	 * @param uid
-	 * @return filePath
-	 * @return err
-	 */
 	basePath := "." + conf.AvatarPath + "user" + strconv.Itoa(int(uid)) + "/"
 	if err = MkDirIfNotExist(basePath); err != nil {
 		return
@@ -35,13 +33,11 @@ func UploadAvatarStatic(file multipart.File, filename string, uid uint) (filePat
 	return
 }
 
+// MkDirIfNotExist
+// @Description: 递归创建文件夹
+// @param path string
+// @return err error
 func MkDirIfNotExist(path string) (err error) {
-	/**
-	 * MkDirIfNotExist
-	 * @Description: 递归创建文件夹
-	 * @param path
-	 * @return err
-	 */
 	err = os.MkdirAll(path, os.ModePerm)
 	return
 }

@@ -1,10 +1,11 @@
 package dao
 
 import (
-	"fmt"
 	"go_mall/model"
 )
 
+// migration
+// @Description: 数据迁移
 func migration() {
 	err := _db.Set("gorm:table_options", "charset=utf8mb4").
 		AutoMigrate(
@@ -20,7 +21,7 @@ func migration() {
 			&model.Order{},
 			&model.Favorite{})
 	if err != nil {
-		fmt.Println("err", err)
+		panic(err)
 	}
 	return
 }

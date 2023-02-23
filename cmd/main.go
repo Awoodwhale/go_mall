@@ -5,6 +5,8 @@ import (
 	"go_mall/routes"
 )
 
+// main
+// @Description: 开启所有服务
 func main() {
 	conf.Init()
 	r := routes.NewRouter()

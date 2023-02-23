@@ -11,6 +11,8 @@ import (
 	"strconv"
 )
 
+// UserService
+// @Description: 用户提交的表单service
 type UserService struct {
 	NickName string `json:"nick_name" form:"nick_name"`
 	UserName string `json:"user_name" form:"user_name"`
@@ -18,18 +20,18 @@ type UserService struct {
 	Key      string `json:"key" form:"key"` // 前端验证
 }
 
+// ShowMoneyService
+// @Description: 展示money的表单
 type ShowMoneyService struct {
 	Key string `json:"key" form:"key" binding:"required" msg:"校验密钥不可为空"` // 验证密码
 }
 
+// Register
+// @Description: 用户注册
+// @receiver service *UserService
+// @param ctx context.Context
+// @return serializer.Response
 func (service *UserService) Register(ctx context.Context) serializer.Response {
-	/**
-	 * Register
-	 * @Description: 用户注册
-	 * @receiver service
-	 * @param ctx
-	 * @return serializer.Response
-	 */
 	var (
 		code = e.Success
 		err  error
@@ -87,14 +89,12 @@ func (service *UserService) Register(ctx context.Context) serializer.Response {
 	}
 }
 
+// Login
+// @Description: 用户登录
+// @receiver service *UserService
+// @param ctx context.Context
+// @return serializer.Response
 func (service *UserService) Login(ctx context.Context) serializer.Response {
-	/**
-	 * Login
-	 * @Description: 用户登录
-	 * @receiver service
-	 * @param ctx
-	 * @return serializer.Response
-	 */
 	var (
 		code    = e.Success
 		user    *model.User
@@ -131,14 +131,13 @@ func (service *UserService) Login(ctx context.Context) serializer.Response {
 	}
 }
 
+// Update
+// @Description: 修改用户信息
+// @receiver service *UserService
+// @param ctx context.Context
+// @param uid uint
+// @return serializer.Response
 func (service *UserService) Update(ctx context.Context, uid uint) serializer.Response {
-	/**
-	 * Update
-	 * @Description: 修改用户信息
-	 * @receiver service
-	 * @param ctx
-	 * @return serializer.Response
-	 */
 	var (
 		code       = e.Success
 		user       *model.User
@@ -184,6 +183,16 @@ func (service *UserService) Update(ctx context.Context, uid uint) serializer.Res
 
 }
 
+// UploadAvatar
+// @Description: 上传头像到本地
+// @receiver service *UserService
+// @param ctx context.Context
+// @param uid uint
+// @param file multipart.File
+// @param size int64
+// @param filename string
+// @param
+// @return serializer.Response
 func (service *UserService) UploadAvatar(
 	ctx context.Context,
 	uid uint,
@@ -191,17 +200,6 @@ func (service *UserService) UploadAvatar(
 	size int64,
 	filename string,
 ) serializer.Response {
-	/**
-	 * UploadAvatar
-	 * @Description: 上传头像到本地
-	 * @receiver service
-	 * @param ctx
-	 * @param id
-	 * @param file
-	 * @param size
-	 * @return serializer.Response
-	 */
-
 	var (
 		code = e.Success
 		user *model.User
@@ -258,15 +256,13 @@ func (service *UserService) UploadAvatar(
 	}
 }
 
+// ShowMoney
+// @Description: 显示用户金额
+// @receiver service *ShowMoneyService
+// @param ctx context.Context
+// @param uid uint
+// @return serializer.Response
 func (service *ShowMoneyService) ShowMoney(ctx context.Context, uid uint) serializer.Response {
-	/**
-	 * ShowMoney
-	 * @Description: 显示用户金额
-	 * @receiver service
-	 * @param ctx
-	 * @param uid
-	 * @return serializer.Response
-	 */
 	var (
 		code    = e.Success
 		err     error

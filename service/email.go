@@ -11,6 +11,8 @@ import (
 	"gopkg.in/mail.v2"
 )
 
+// SendEmailService
+// @Description: 发送邮箱的service
 type SendEmailService struct {
 	Email    string `json:"email" form:"email" binding:"required,email" msg:"邮箱格式错误"`
 	Password string `json:"password" form:"password"`
@@ -20,19 +22,19 @@ type SendEmailService struct {
 	OperationType uint `json:"operation_type" form:"operation_type" binding:"required" msg:"操作类型不能为空"`
 }
 
+// ValidateEmailService
+// @Description: 验证邮箱的service
 type ValidateEmailService struct {
 	// 空结构体
 }
 
+// SendEmail
+// @Description: 发送邮箱
+// @receiver service *SendEmailService
+// @param c context.Context
+// @param uid uint
+// @return serializer.Response
 func (service *SendEmailService) SendEmail(c context.Context, uid uint) serializer.Response {
-	/**
-	 * SendEmail
-	 * @Description: 发送邮箱
-	 * @receiver service
-	 * @param c
-	 * @param uid
-	 * @return serializer.Response
-	 */
 	var (
 		code    = e.Success
 		err     error
@@ -124,15 +126,13 @@ func (service *SendEmailService) SendEmail(c context.Context, uid uint) serializ
 	}
 }
 
+// ValidateEmail
+// @Description: 验证邮箱
+// @receiver service *ValidateEmailService
+// @param c context.Context
+// @param claims *utils.EmailClaims
+// @return serializer.Response
 func (service *ValidateEmailService) ValidateEmail(c context.Context, claims *utils.EmailClaims) serializer.Response {
-	/**
-	 * ValidateEmail
-	 * @Description: 验证邮箱
-	 * @receiver service
-	 * @param c
-	 * @param claims
-	 * @return serializer.Response
-	 */
 	var (
 		code          = e.Success
 		err           error

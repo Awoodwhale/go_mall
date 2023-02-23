@@ -29,27 +29,23 @@ var MessageFlags = map[int]string{
 	ErrorWithFileSize: "文件大小错误,最大5MB",
 }
 
+// GetMessageByCode
+// @Description: 获取code对应的message
+// @param code int
+// @return string
 func GetMessageByCode(code int) string {
-	/**
-	 * GetMessageByCode
-	 * @Description: 获取code对应的message
-	 * @param code
-	 * @return string
-	 */
 	if msg, ok := MessageFlags[code]; ok {
 		return msg
 	}
 	return MessageFlags[Error]
 }
 
+// HandleBindingError
+// @Description: 获取binding错误的msg tag
+// @param err error
+// @param obj any
+// @return msg string
 func HandleBindingError(err error, obj any) (msg string) {
-	/**
-	 * HandleBindingError
-	 * @Description: 获取binding错误的msg tag
-	 * @param err
-	 * @param obj
-	 * @return msg
-	 */
 	if err == nil {
 		return
 	}

@@ -7,6 +7,9 @@ import (
 	"strings"
 )
 
+// Cors
+// @Description: cors中间件
+// @return gin.HandlerFunc
 func Cors() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		method := c.Request.Method               //请求方法

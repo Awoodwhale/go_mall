@@ -9,6 +9,9 @@ import (
 	"time"
 )
 
+// JWT
+// @Description: jwt中间件
+// @return gin.HandlerFunc
 func JWT() gin.HandlerFunc {
 	// token验证中间件
 	return func(c *gin.Context) {

@@ -13,6 +13,10 @@ import (
 
 var _db *gorm.DB
 
+// Database
+// @Description: 初始化database
+// @param pathRead string
+// @param pathWrite string
 func Database(pathRead, pathWrite string) {
 	var ormLogger logger.Interface
 	if gin.Mode() == "debug" {
@@ -53,6 +57,10 @@ func Database(pathRead, pathWrite string) {
 	migration()
 }
 
+// NewDBClient
+// @Description: 获取db对象
+// @param ctx context.Context
+// @return *gorm.DB
 func NewDBClient(ctx context.Context) *gorm.DB {
 	db := _db
 	return db.WithContext(ctx)

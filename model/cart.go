@@ -2,6 +2,8 @@ package model
 
 import "gorm.io/gorm"
 
+// Cart
+// @Description: 购物车model
 type Cart struct {
 	gorm.Model
 	UserID    uint `gorm:"not null"`

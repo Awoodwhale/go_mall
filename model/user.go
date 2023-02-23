@@ -11,6 +11,8 @@ const (
 	InitMoney    = 114514   // 注册后用户的初始金额
 )
 
+// User
+// @Description: 用户 model
 type User struct {
 	gorm.Model
 	UserName string `gorm:"type:varchar(20) unique"`
@@ -22,14 +24,12 @@ type User struct {
 	Money    string
 }
 
+// SetPassword
+// @Description: 加密密码
+// @receiver u *User
+// @param password string
+// @return error
 func (u *User) SetPassword(password string) error {
-	/**
-	 * SetPassword
-	 * @Description: 加密密码
-	 * @receiver u
-	 * @param password
-	 * @return error
-	 */
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), PasswordCost)
 	if err != nil {
 		return err
@@ -38,6 +38,11 @@ func (u *User) SetPassword(password string) error {
 	return nil
 }
 
+// CheckPassword
+// @Description: 检测密码
+// @receiver u *User
+// @param pwd string
+// @return bool
 func (u *User) CheckPassword(pwd string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(pwd))
 	if err != nil {
