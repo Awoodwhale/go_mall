@@ -20,22 +20,18 @@ func CheckKey(key string) bool {
 	return true
 }
 
-var Encrypt *Encryption
+var Encrypt = NewEncryption()
 
-// AES 加密算法
+// Encryption AES 加密算法
 type Encryption struct {
 	key string
-}
-
-func init() {
-	Encrypt = NewEncryption()
 }
 
 func NewEncryption() *Encryption {
 	return &Encryption{}
 }
 
-// 填充密码长度
+// PadPwd 填充密码长度
 func PadPwd(srcByte []byte, blockSize int) []byte {
 	padNum := blockSize - len(srcByte)%blockSize
 	ret := bytes.Repeat([]byte{byte(padNum)}, padNum)
@@ -43,7 +39,23 @@ func PadPwd(srcByte []byte, blockSize int) []byte {
 	return srcByte
 }
 
-// 加密
+// 去掉填充的部分
+func unPadPwd(dst []byte) ([]byte, error) {
+	if len(dst) <= 0 {
+		return dst, errors.New("长度有误")
+	}
+	// 去掉的长度
+	unpadNum := int(dst[len(dst)-1])
+	strErr := "error"
+	op := []byte(strErr)
+	if len(dst) < unpadNum {
+		return op, nil
+	}
+	str := dst[:(len(dst) - unpadNum)]
+	return str, nil
+}
+
+// AesEncoding 加密
 func (k *Encryption) AesEncoding(src string) string {
 	srcByte := []byte(src)
 	block, err := aes.NewCipher([]byte(k.key))
@@ -59,23 +71,7 @@ func (k *Encryption) AesEncoding(src string) string {
 	return pwd
 }
 
-// 去掉填充的部分
-func UnPadPwd(dst []byte) ([]byte, error) {
-	if len(dst) <= 0 {
-		return dst, errors.New("长度有误")
-	}
-	// 去掉的长度
-	unpadNum := int(dst[len(dst)-1])
-	strErr := "error"
-	op := []byte(strErr)
-	if len(dst) < unpadNum {
-		return op, nil
-	}
-	str := dst[:(len(dst) - unpadNum)]
-	return str, nil
-}
-
-// 解密
+// AesDecoding 解密
 func (k *Encryption) AesDecoding(pwd string) string {
 	pwdByte := []byte(pwd)
 	pwdByte, err := base64.StdEncoding.DecodeString(pwd)
@@ -88,14 +84,14 @@ func (k *Encryption) AesDecoding(pwd string) string {
 	}
 	dst := make([]byte, len(pwdByte))
 	block.Decrypt(dst, pwdByte)
-	dst, err = UnPadPwd(dst) // 填充的要去掉
+	dst, err = unPadPwd(dst) // 填充的要去掉
 	if err != nil {
-		return "0"
+		return pwd
 	}
 	return string(dst)
 }
 
-// set方法
+// SetKey set方法
 func (k *Encryption) SetKey(key string) {
 	k.key = key
 }

@@ -50,6 +50,9 @@ func HandleBindingError(err error, obj any) (msg string) {
 	 * @param obj
 	 * @return msg
 	 */
+	if err == nil {
+		return
+	}
 	if errs, ok := err.(validator.ValidationErrors); ok {
 		getObj := reflect.TypeOf(obj)
 		for _, v := range errs {

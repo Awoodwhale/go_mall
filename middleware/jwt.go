@@ -14,10 +14,9 @@ func JWT() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		code := e.Success
 		claims, err := utils.ParseJWT(c.GetHeader("Authorization"))
-		if err != nil { // 解析失败
+		if err != nil { // 解析失败,过期了也会解析失败
 			code = e.ErrorWithParseToken
 		} else if time.Now().Unix() > claims.ExpiresAt {
-			// 过期了
 			code = e.ErrorWithExpiredToken
 		}
 		if code != e.Success { // 不成功

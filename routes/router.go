@@ -34,7 +34,9 @@ func NewRouter() *gin.Engine {
 		{
 			authed.PUT("user/update", api.UserUpdate)        // 用户更新
 			authed.POST("user/avatar", api.UserUploadAvatar) // 更新用户头像
+			authed.POST("user/money", api.UserShowMoney)     // 显示用户金额
 			authed.POST("user/send_email", api.SendEmail)    // 发送邮件
+
 		}
 	}
 

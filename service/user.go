@@ -18,6 +18,10 @@ type UserService struct {
 	Key      string `json:"key" form:"key"` // 前端验证
 }
 
+type ShowMoneyService struct {
+	Key string `json:"key" form:"key" binding:"required" msg:"校验密钥不可为空"` // 验证密码
+}
+
 func (service *UserService) Register(ctx context.Context) serializer.Response {
 	/**
 	 * Register
@@ -251,5 +255,48 @@ func (service *UserService) UploadAvatar(
 		Code:    code,
 		Message: e.GetMessageByCode(code),
 		Data:    serializer.BuildUser(user),
+	}
+}
+
+func (service *ShowMoneyService) ShowMoney(ctx context.Context, uid uint) serializer.Response {
+	/**
+	 * ShowMoney
+	 * @Description: 显示用户金额
+	 * @receiver service
+	 * @param ctx
+	 * @param uid
+	 * @return serializer.Response
+	 */
+	var (
+		code    = e.Success
+		err     error
+		user    *model.User
+		userDao = dao.NewUserDao(ctx)
+	)
+
+	// 检测key
+	if !utils.CheckKey(service.Key) {
+		code = e.ErrorWithKey
+		return serializer.Response{
+			Code:    code,
+			Message: e.GetMessageByCode(code),
+		}
+	}
+
+	// 读取user的money
+	user, err = userDao.GetUserById(uid)
+	if err != nil {
+		code = e.ErrorWithSQL
+		return serializer.Response{
+			Code:    code,
+			Message: e.GetMessageByCode(code),
+		}
+	}
+
+	// 返回money
+	return serializer.Response{
+		Code:    code,
+		Message: e.GetMessageByCode(code),
+		Data:    serializer.BuildMoney(user, service.Key),
 	}
 }

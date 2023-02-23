@@ -86,6 +86,25 @@ func UserUploadAvatar(c *gin.Context) {
 	}
 }
 
+func UserShowMoney(c *gin.Context) {
+	/**
+	 * UserShowMoney
+	 * @Description: 显示用户的money
+	 * @param c
+	 */
+	var showMoneyService service.ShowMoneyService
+	if err := c.ShouldBind(&showMoneyService); err == nil {
+		claims, _ := c.Get("claims")
+		res := showMoneyService.ShowMoney(c.Request.Context(), claims.(*utils.Claims).ID)
+		c.JSON(http.StatusOK, res)
+	} else {
+		c.JSON(http.StatusBadRequest, serializer.Response{
+			Code:    e.Error,
+			Message: e.HandleBindingError(err, &showMoneyService),
+		})
+	}
+}
+
 func SendEmail(c *gin.Context) {
 	/**
 	 * SendEmail
@@ -121,8 +140,7 @@ func ValidateEmail(c *gin.Context) {
 		// parse错误
 		code = e.ErrorWithParseToken
 	} else if time.Now().Unix() > claims.ExpiresAt {
-		// 过期了
-		code = e.ErrorWithExpiredToken
+		code = e.ErrorWithExpiredToken // token过期（其实不会走到这个分支，过期上面err会报错）
 	}
 	err = c.ShouldBind(&validateEmailService)
 	if err != nil {
