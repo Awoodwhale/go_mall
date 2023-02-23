@@ -1,7 +1,9 @@
 package conf
 
 import (
+	"go_mall/cache"
 	"go_mall/dao"
+	"go_mall/pkg/utils"
 	"gopkg.in/ini.v1"
 	"strings"
 )
@@ -28,8 +30,11 @@ var (
 	SmtpToken  string
 	// img
 	ImgHost     string
+	ImgPort     string
 	ProductPath string
 	AvatarPath  string
+	// log
+	LogPath string
 )
 
 // Init
@@ -39,18 +44,23 @@ func Init() {
 	if err != nil {
 		panic(err)
 	}
+	// load config file
 	loadServer(file)
 	loadMySQL(file)
 	loadRedis(file)
 	loadEmail(file)
 	loadImage(file)
+	loadLog(file)
+	// logger init
+	utils.InitLog(LogPath)
 	// mysql read（主）
 	pathRead := strings.Join([]string{DBUser, ":", DBPwd, "@tcp(", DBHost, ":", DBPort, ")/", DBName, "?charset=utf8mb4&parseTime=true"}, "")
 	// mysql write（从）
 	pathWrite := strings.Join([]string{DBUser, ":", DBPwd, "@tcp(", DBHost, ":", DBPort, ")/", DBName, "?charset=utf8mb4&parseTime=true"}, "")
-
-	dao.Database(pathRead, pathWrite)
-
+	// mysql init
+	dao.InitDatabase(pathRead, pathWrite)
+	// redis init
+	cache.InitDatabase(RedisHost+":"+RedisPort, RedisName, RedisPwd)
 }
 
 // loadServer
@@ -97,6 +107,14 @@ func loadEmail(file *ini.File) {
 // @param file *ini.File
 func loadImage(file *ini.File) {
 	ImgHost = file.Section("image").Key("ImgHost").String()
+	ImgPort = file.Section("image").Key("ImgPort").String()
 	ProductPath = file.Section("image").Key("ProductPath").String()
 	AvatarPath = file.Section("image").Key("AvatarPath").String()
+}
+
+// loadLog
+// @Description: 获取log配置
+// @param file *ini.File
+func loadLog(file *ini.File) {
+	LogPath = file.Section("log").Key("LogPath").String()
 }

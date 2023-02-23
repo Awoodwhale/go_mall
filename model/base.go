@@ -3,6 +3,6 @@ package model
 // BasePage
 // @Description: 分页model
 type BasePage struct {
-	PageNum  int `form:"pageNum"`
-	PageSize int `form:"pageSize"`
+	PageNum  int `json:"page_num" form:"page_num"`
+	PageSize int `json:"page_size" form:"page_size"`
 }

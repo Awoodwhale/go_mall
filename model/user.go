@@ -15,10 +15,10 @@ const (
 // @Description: 用户 model
 type User struct {
 	gorm.Model
-	UserName string `gorm:"type:varchar(20) unique"`
-	Email    string
+	UserName string `gorm:"type:varchar(50)"`
+	Email    string `gorm:"type:varchar(50)"`
 	Password string
-	NickName string
+	NickName string `gorm:"type:varchar(50)"`
 	Status   string
 	Avatar   string
 	Money    string

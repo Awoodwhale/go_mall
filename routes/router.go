@@ -31,15 +31,20 @@ func NewRouter() *gin.Engine {
 		v1.POST("user/register", api.UserRegister)              // 用户注册
 		v1.POST("user/login", api.UserLogin)                    // 用户登录
 		v1.GET("user/validate_email/:token", api.ValidateEmail) // 验证邮件有效
+		v1.GET("carousel", api.ListCarousel)                    // 轮播图
+		v1.GET("product", api.ListProduct)                      // 商品列表
 
 		authed := v1.Group("/")      // 需要登录保护
 		authed.Use(middleware.JWT()) // jwt校验中间件
 		{
+			// 用户操作
 			authed.PUT("user/update", api.UserUpdate)        // 用户更新
 			authed.POST("user/avatar", api.UserUploadAvatar) // 更新用户头像
 			authed.POST("user/money", api.UserShowMoney)     // 显示用户金额
 			authed.POST("user/send_email", api.SendEmail)    // 发送邮件
 
+			// 商品操作
+			authed.POST("product", api.CreateProduct) // 创建商品
 		}
 	}
 

@@ -21,6 +21,8 @@ const (
 	ErrorWithSendEmail     = 50012 // 邮箱发送错误
 	ErrorWithNotExistEmail = 50013 // 邮箱不存在
 	ErrorWithSameEmail     = 50014 // 绑定重复邮箱
+	ErrorWithUploadProduct = 50015 // 商品图片上传失败
+	ErrorWithFileOpen      = 50016 // 图片文件打开失败
 
 	// product的错误
 

@@ -24,6 +24,8 @@ var MessageFlags = map[int]string{
 	ErrorWithSendEmail:     "邮件发送失败",
 	ErrorWithNotExistEmail: "邮箱不存在",
 	ErrorWithSameEmail:     "绑定重复邮箱",
+	ErrorWithUploadProduct: "商品图片上传失败",
+	ErrorWithFileOpen:      "图片文件打开失败",
 
 	ErrorWithSQL:      "SQL错误",
 	ErrorWithFileSize: "文件大小错误,最大5MB",
@@ -58,5 +60,6 @@ func HandleBindingError(err error, obj any) (msg string) {
 			}
 		}
 	}
+	msg = err.Error()
 	return
 }

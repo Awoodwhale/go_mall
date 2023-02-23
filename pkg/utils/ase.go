@@ -7,23 +7,18 @@ import (
 	"errors"
 )
 
-// CheckKey
-// @Description: 检测Key的合法性
-// @param key string
-// @return bool
-func CheckKey(key string) bool {
-	if key == "" || len(key) != 16 {
-		return false
-	}
-	return true
-}
-
-var Encrypt = NewEncryption()
-
 // Encryption
 // @Description: AES 加密算法
 type Encryption struct {
 	key string
+}
+
+var Encrypt *Encryption
+
+// init
+// @Description: 初始化enc
+func init() {
+	Encrypt = NewEncryption()
 }
 
 // NewEncryption
@@ -115,4 +110,15 @@ func (k *Encryption) AesDecoding(pwd string) string {
 // @param key string
 func (k *Encryption) SetKey(key string) {
 	k.key = key
+}
+
+// CheckKey
+// @Description: 检测Key的合法性
+// @param key string
+// @return bool
+func CheckKey(key string) bool {
+	if key == "" || len(key) != 16 {
+		return false
+	}
+	return true
 }

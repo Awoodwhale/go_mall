@@ -10,6 +10,22 @@ type UserDao struct {
 	*gorm.DB
 }
 
+// NewUserDao
+// @Description: 通过ctx获取userDao
+// @param ctx context.Context
+// @return *UserDao
+func NewUserDao(ctx context.Context) *UserDao {
+	return &UserDao{NewDBClient(ctx)}
+}
+
+// NewUserDaoByDB
+// @Description: 通过db获取userDao
+// @param db *gorm.DB
+// @return *UserDao
+func NewUserDaoByDB(db *gorm.DB) *UserDao {
+	return &UserDao{db}
+}
+
 // ExistOrNotByUserName
 // @Description: 通过username查询用户是否存在
 // @receiver dao *UserDao
@@ -52,23 +68,6 @@ func (dao *UserDao) GetUserById(uid uint) (user *model.User, err error) {
 // @param uid uint
 // @param user *model.User
 // @return err error
-func (dao *UserDao) UpdateUserById(uid uint, user *model.User) (err error) {
-	err = dao.DB.Model(&model.User{}).Where("id=?", uid).Updates(&user).Error
-	return
-}
-
-// NewUserDao
-// @Description: 通过ctx获取userDao
-// @param ctx context.Context
-// @return *UserDao
-func NewUserDao(ctx context.Context) *UserDao {
-	return &UserDao{NewDBClient(ctx)}
-}
-
-// NewUserDaoByDB
-// @Description: 通过db获取userDao
-// @param db *gorm.DB
-// @return *UserDao
-func NewUserDaoByDB(db *gorm.DB) *UserDao {
-	return &UserDao{db}
+func (dao *UserDao) UpdateUserById(uid uint, user *model.User) error {
+	return dao.DB.Model(&model.User{}).Where("id=?", uid).Updates(&user).Error
 }

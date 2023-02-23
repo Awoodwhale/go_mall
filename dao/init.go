@@ -13,11 +13,11 @@ import (
 
 var _db *gorm.DB
 
-// Database
+// InitDatabase
 // @Description: 初始化database
 // @param pathRead string
 // @param pathWrite string
-func Database(pathRead, pathWrite string) {
+func InitDatabase(pathRead, pathWrite string) {
 	var ormLogger logger.Interface
 	if gin.Mode() == "debug" {
 		ormLogger = logger.Default.LogMode(logger.Info)
@@ -44,7 +44,7 @@ func Database(pathRead, pathWrite string) {
 	sqlDB, _ := db.DB()
 	sqlDB.SetMaxIdleConns(20)  // 空闲连接池
 	sqlDB.SetMaxOpenConns(100) // 打开
-	sqlDB.SetConnMaxLifetime(time.Minute)
+	sqlDB.SetConnMaxLifetime(time.Minute * 5)
 
 	// 主从配置
 	_db = db
@@ -54,6 +54,7 @@ func Database(pathRead, pathWrite string) {
 		Policy:   dbresolver.RandomPolicy{},
 	}))
 
+	// 数据迁移
 	migration()
 }
 

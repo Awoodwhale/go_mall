@@ -227,7 +227,7 @@ func (service *UserService) UploadAvatar(
 	}
 
 	// 头像保存到本地
-	filePath, err := UploadAvatarStatic(file, filename, uid)
+	filePath, err := UploadAvatarImage(file, filename, uid)
 	if err != nil {
 		code = e.ErrorWithUploadAvatar
 		return serializer.Response{
@@ -286,6 +286,7 @@ func (service *ShowMoneyService) ShowMoney(ctx context.Context, uid uint) serial
 		return serializer.Response{
 			Code:    code,
 			Message: e.GetMessageByCode(code),
+			Error:   err.Error(),
 		}
 	}
 

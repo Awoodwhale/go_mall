@@ -51,6 +51,14 @@ func (service *SendEmailService) SendEmail(c context.Context, uid uint) serializ
 
 	// 读取用户数据
 	user, err = userDao.GetUserById(uid)
+	if err != nil {
+		code = e.ErrorWithSQL
+		return serializer.Response{
+			Code:    code,
+			Message: e.GetMessageByCode(code),
+			Error:   err.Error(),
+		}
+	}
 
 	if service.OperationType == 1 { // 绑定邮箱check
 		if user.Email == service.Email {

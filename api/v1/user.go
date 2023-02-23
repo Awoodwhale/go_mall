@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"go_mall/pkg/e"
 	"go_mall/pkg/utils"
-	"go_mall/serializer"
 	"go_mall/service"
 	"net/http"
 	"time"
@@ -19,10 +18,8 @@ func UserRegister(c *gin.Context) {
 		res := userRegisterService.Register(c.Request.Context())
 		c.JSON(http.StatusOK, res)
 	} else {
-		c.JSON(http.StatusBadRequest, serializer.Response{
-			Code:    e.Error,
-			Message: e.HandleBindingError(err, &userRegisterService),
-		})
+		c.JSON(http.StatusBadRequest, ErrorResponse(err, &userRegisterService))
+		utils.Logger.Errorln("UserRegister api", err)
 	}
 }
 
@@ -35,10 +32,8 @@ func UserLogin(c *gin.Context) {
 		res := userLoginService.Login(c.Request.Context())
 		c.JSON(http.StatusOK, res)
 	} else {
-		c.JSON(http.StatusBadRequest, serializer.Response{
-			Code:    e.Error,
-			Message: e.HandleBindingError(err, &userLoginService),
-		})
+		c.JSON(http.StatusBadRequest, ErrorResponse(err, &userLoginService))
+		utils.Logger.Errorln("UserLogin api", err)
 	}
 }
 
@@ -52,10 +47,8 @@ func UserUpdate(c *gin.Context) {
 		res := userUpdateService.Update(c.Request.Context(), claims.(*utils.Claims).ID)
 		c.JSON(http.StatusOK, res)
 	} else {
-		c.JSON(http.StatusBadRequest, serializer.Response{
-			Code:    e.Error,
-			Message: e.HandleBindingError(err, &userUpdateService),
-		})
+		c.JSON(http.StatusBadRequest, ErrorResponse(err, &userUpdateService))
+		utils.Logger.Errorln("UserUpdate api", err)
 	}
 }
 
@@ -71,10 +64,8 @@ func UserUploadAvatar(c *gin.Context) {
 		res := userAvatarService.UploadAvatar(c.Request.Context(), claims.(*utils.Claims).ID, file, fileSize, fileName)
 		c.JSON(http.StatusOK, res)
 	} else {
-		c.JSON(http.StatusBadRequest, serializer.Response{
-			Code:    e.Error,
-			Message: e.HandleBindingError(err, &userAvatarService),
-		})
+		c.JSON(http.StatusBadRequest, ErrorResponse(err, &userAvatarService))
+		utils.Logger.Errorln("UserUploadAvatar api", err)
 	}
 }
 
@@ -88,10 +79,8 @@ func UserShowMoney(c *gin.Context) {
 		res := showMoneyService.ShowMoney(c.Request.Context(), claims.(*utils.Claims).ID)
 		c.JSON(http.StatusOK, res)
 	} else {
-		c.JSON(http.StatusBadRequest, serializer.Response{
-			Code:    e.Error,
-			Message: e.HandleBindingError(err, &showMoneyService),
-		})
+		c.JSON(http.StatusBadRequest, ErrorResponse(err, &showMoneyService))
+		utils.Logger.Errorln("UserShowMoney api", err)
 	}
 }
 
@@ -105,10 +94,8 @@ func SendEmail(c *gin.Context) {
 		res := sendEmailService.SendEmail(c.Request.Context(), claims.(*utils.Claims).ID)
 		c.JSON(http.StatusOK, res)
 	} else {
-		c.JSON(http.StatusBadRequest, serializer.Response{
-			Code:    e.Error,
-			Message: e.HandleBindingError(err, &sendEmailService),
-		})
+		c.JSON(http.StatusBadRequest, ErrorResponse(err, &sendEmailService))
+		utils.Logger.Errorln("SendEmail api", err)
 	}
 }
 
@@ -136,13 +123,7 @@ func ValidateEmail(c *gin.Context) {
 		res := validateEmailService.ValidateEmail(c.Request.Context(), claims)
 		c.JSON(http.StatusOK, res)
 	} else {
-		msg := e.HandleBindingError(err, &validateEmailService)
-		if msg == "" {
-			msg = e.GetMessageByCode(code)
-		}
-		c.JSON(http.StatusBadRequest, serializer.Response{
-			Code:    code,
-			Message: msg,
-		})
+		c.JSON(http.StatusBadRequest, ErrorResponse(err, &validateEmailService))
+		utils.Logger.Errorln("ValidateEmail api", err)
 	}
 }
