@@ -43,11 +43,8 @@ func (service *UserService) Register(ctx context.Context) serializer.Response {
 		}
 	}
 
-	// 进行对称加密
-	utils.Encrypt.SetKey(service.Key)
-
-	userDao := dao.NewUserDao(ctx)
 	// 查看这个名称的用户是否存在
+	userDao := dao.NewUserDao(ctx)
 	if _, exist := userDao.ExistOrNotByUserName(service.UserName); exist {
 		// 用户已经存在了
 		code = e.ErrorWithExistUser
@@ -61,7 +58,7 @@ func (service *UserService) Register(ctx context.Context) serializer.Response {
 		NickName: service.NickName,
 		Avatar:   "avatar.png",
 		Status:   model.ActiveUser,
-		Money:    utils.Encrypt.AesEncoding(strconv.Itoa(model.InitMoney)), // 初始金额加密
+		Money:    utils.AesEncoding(strconv.Itoa(model.InitMoney), service.Key), // 初始金额加密
 	}
 	// 用户密码加密
 	if err = user.SetPassword(service.Password); err != nil {
