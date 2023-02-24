@@ -10,9 +10,9 @@ import (
 
 var Logger *logrus.Logger
 
-// InitLog
+// InitLogger
 // @Description: logger init
-func InitLog(logPath string) {
+func InitLogger(logPath string) {
 	// 存在就去更新文件
 	if Logger != nil {
 		src, err := setOutPutFile(logPath)

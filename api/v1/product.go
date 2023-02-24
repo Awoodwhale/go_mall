@@ -37,3 +37,14 @@ func ListProduct(c *gin.Context) {
 		utils.Logger.Errorln("CreateProduct api", err)
 	}
 }
+
+func SearchProduct(c *gin.Context) {
+	var searchService service.ProductService
+	if err := c.ShouldBind(&searchService); err == nil {
+		res := searchService.SearchProduct(c.Request.Context())
+		c.JSON(http.StatusOK, res)
+	} else {
+		c.JSON(http.StatusBadRequest, ErrorResponse(err, &searchService))
+		utils.Logger.Errorln("SearchProduct api", err)
+	}
+}

@@ -35,6 +35,8 @@ var (
 	AvatarPath  string
 	// log
 	LogPath string
+	// page
+	PageSize uint
 )
 
 // Init
@@ -51,8 +53,9 @@ func Init() {
 	loadEmail(file)
 	loadImage(file)
 	loadLog(file)
+	loadPage(file)
 	// logger init
-	utils.InitLog(LogPath)
+	utils.InitLogger(LogPath)
 	// mysql read（主）
 	pathRead := strings.Join([]string{DBUser, ":", DBPwd, "@tcp(", DBHost, ":", DBPort, ")/", DBName, "?charset=utf8mb4&parseTime=true"}, "")
 	// mysql write（从）
@@ -117,4 +120,17 @@ func loadImage(file *ini.File) {
 // @param file *ini.File
 func loadLog(file *ini.File) {
 	LogPath = file.Section("log").Key("LogPath").String()
+}
+
+// loadPage
+// @Description: 配置默认分页显示数量
+// @param file *ini.File
+func loadPage(file *ini.File) {
+	size, err := file.Section("page").Key("PageSize").Uint()
+	if err != nil {
+		utils.Logger.Errorln("config loadPage PageSize parse error,", err.Error())
+		panic(err)
+	} else {
+		PageSize = size
+	}
 }

@@ -68,7 +68,14 @@ func (dao *ProductDao) CountProductByCondition(condition map[string]any) (total 
 // @return err error
 func (dao *ProductDao) ListProductByCondition(condition map[string]any, page *model.BasePage) (products []*model.Product, err error) {
 	err = dao.DB.Preload("Category").Where(condition).
-		Offset((page.PageNum - 1) * page.PageSize).
-		Limit(page.PageSize).Find(&products).Error
+		Offset(int((page.PageNum - 1) * page.PageSize)). // 分页
+		Limit(int(page.PageSize)).Find(&products).Error
+	return
+}
+
+func (dao *ProductDao) SearchProduct(info string, page *model.BasePage) (products []*model.Product, err error) {
+	err = dao.DB.Model(&model.Product{}).Where("title like ? or info like ?", "%"+info+"%", "%"+info+"%").
+		Offset(int((page.PageNum - 1) * page.PageSize)). // 分页
+		Limit(int(page.PageSize)).Find(&products).Error
 	return
 }

@@ -14,8 +14,8 @@ import (
 // UserService
 // @Description: 用户提交的表单service
 type UserService struct {
-	NickName string `json:"nick_name" form:"nick_name"`
 	UserName string `json:"user_name" form:"user_name"`
+	NickName string `json:"nick_name" form:"nick_name"`
 	Password string `json:"password" form:"password"`
 	Key      string `json:"key" form:"key"` // 前端验证
 }
@@ -36,6 +36,17 @@ func (service *UserService) Register(ctx context.Context) serializer.Response {
 		code = e.Success
 		err  error
 	)
+
+	// 判断表单是否完整
+	if service.UserName == "" || service.NickName == "" || service.Password == "" {
+		code = e.InvalidParams
+		utils.Logger.Debugln("service user Register empty username or nickname or password")
+		return serializer.Response{
+			Code:    code,
+			Message: e.GetMessageByCode(code),
+		}
+	}
+
 	if !utils.CheckKey(service.Key) { // 密钥检测
 		code = e.ErrorWithKey
 		return serializer.Response{
@@ -123,7 +134,7 @@ func (service *UserService) Login(ctx context.Context) serializer.Response {
 	// 没有发生错误那么就是成功登录
 	return serializer.Response{
 		Code:    code,
-		Message: e.GetMessageByCode(code),
+		Message: "登录成功",
 		Data:    serializer.TokenData{User: serializer.BuildUser(user), Token: token},
 	}
 }
@@ -174,7 +185,7 @@ func (service *UserService) Update(ctx context.Context, uid uint) serializer.Res
 	// 信息修改成功
 	return serializer.Response{
 		Code:    code,
-		Message: e.GetMessageByCode(code),
+		Message: "更新用户信息成功",
 		Data:    serializer.BuildUser(user),
 	}
 
@@ -248,7 +259,7 @@ func (service *UserService) UploadAvatar(
 
 	return serializer.Response{
 		Code:    code,
-		Message: e.GetMessageByCode(code),
+		Message: "上传头像成功",
 		Data:    serializer.BuildUser(user),
 	}
 }
@@ -290,7 +301,7 @@ func (service *ShowMoneyService) ShowMoney(ctx context.Context, uid uint) serial
 	// 返回money
 	return serializer.Response{
 		Code:    code,
-		Message: e.GetMessageByCode(code),
+		Message: "获取用户余额成功",
 		Data:    serializer.BuildMoney(user, service.Key),
 	}
 }

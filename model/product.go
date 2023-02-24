@@ -12,8 +12,8 @@ import (
 type Product struct {
 	gorm.Model
 	Name          string
-	CategoryID    uint `gorm:"not null"`
-	Category      Category
+	CategoryID    uint     `gorm:"not null"`
+	Category      Category `gorm:"foreignKey:CategoryID"`
 	Title         string
 	Info          string `gorm:"size:1000"`
 	ImagePath     string

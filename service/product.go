@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"go_mall/conf"
 	"go_mall/dao"
 	"go_mall/model"
 	"go_mall/pkg/e"
@@ -213,7 +214,7 @@ func (service *ProductService) ListProduct(c context.Context) serializer.Respons
 	)
 
 	if service.PageSize == 0 {
-		service.PageSize = 15
+		service.PageSize = conf.PageSize
 	}
 
 	condition := map[string]any{}
@@ -243,4 +244,34 @@ func (service *ProductService) ListProduct(c context.Context) serializer.Respons
 	wg.Wait()
 
 	return serializer.BuildListResponse(serializer.BuildProducts(products), uint(total))
+}
+
+// SearchProduct
+// @Description: 根据info搜索商品
+// @receiver service *ProductService
+// @param c context.Context
+// @return serializer.Response
+func (service *ProductService) SearchProduct(c context.Context) serializer.Response {
+	var (
+		code = e.Success
+		err  error
+	)
+	if service.Info == "" {
+		code = e.InvalidParams
+		return serializer.Response{
+			Code:    code,
+			Message: "请输入查询商品的info",
+		}
+	}
+	if service.PageSize == 0 {
+		service.PageSize = conf.PageSize
+	}
+	productDao := dao.NewProductDao(c)
+	products, err := productDao.SearchProduct(service.Info, &service.BasePage)
+	if err != nil {
+		code = e.ErrorWithSQL
+		utils.Logger.Errorln("service ProductService SearchProduct SQL err, ", err.Error())
+		return serializer.Response{Code: code, Message: e.GetMessageByCode(code)}
+	}
+	return serializer.BuildListResponse(serializer.BuildProducts(products), uint(len(products)))
 }
